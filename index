@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Paseo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['DM Serif Display', 'serif']
+                    },
+                    colors: {
+                        cuban: {
+                            stucco: '#FFF7ED',     // Warmer, creamier off-white
+                            coffee: '#362511',     // Richer, deeper cigar brown for max contrast
+                            coral: '#E75A7C',      // Vibrant flamingo coral
+                            teal: '#14746F',       // Deep Havana Night teal 
+                            tealLight: '#2A9D8F',  // Accent teal
+                            sand: '#E8D5B5',       // Light gold/sand
+                            white: '#FFFFFF',
+                            // Custom Dark Mode Palette
+                            darkBg: '#121212',
+                            darkCard: '#1E1E1E',
+                            darkBorder: '#333333',
+                            darkText: '#F5F5F4',
+                            darkMuted: '#A3A3A3'   // High contrast muted text for dark mode
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            overscroll-behavior-y: contain; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .btn-press:active { transform: translateY(4px) scale(0.97); box-shadow: 0 0px 0 0 transparent !important; }
+        
+        /* View Transitions */
+        .view-section { display: none; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .view-section.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Modal Slide Up Animation */
+        .modal-enter { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Bottom Nav Active State */
+        .nav-btn { transition: all 0.2s ease; color: #8C8279; }
+        .dark .nav-btn { color: #A3A3A3; }
+        .nav-btn.active { color: #14746F; transform: translateY(-4px); }
+        .dark .nav-btn.active { color: #2A9D8F; }
+        .nav-indicator { opacity: 0; transform: scale(0); transition: all 0.2s ease; }
+        .nav-btn.active .nav-indicator { opacity: 1; transform: scale(1); }
+
+        ::-webkit-scrollbar { width: 0px; } 
+        
+        .toggle-checkbox:checked { right: 0; border-color: #14746F; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #14746F; }
+        .dark .toggle-checkbox:checked { border-color: #2A9D8F; }
+        .dark .toggle-checkbox:checked + .toggle-label { background-color: #2A9D8F; }
+    </style>
+</head>
+<body class="bg-cuban-stucco dark:bg-cuban-darkBg text-cuban-coffee dark:text-cuban-darkText font-sans antialiased h-screen flex flex-col overflow-hidden select-none relative transition-colors duration-300">
+
+    <!-- ==========================================
+         MODALS (Global Overlays)
+    =========================================== -->
+    
+    <!-- Stop Workout Modal -->
+    <div id="stop-modal" class="hidden absolute inset-0 bg-cuban-coffee/70 dark:bg-black/80 z-[60] flex items-center justify-center p-6 backdrop-blur-md transition-opacity">
+        <div class="bg-cuban-stucco dark:bg-cuban-darkCard p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl border-2 border-cuban-sand dark:border-cuban-darkBorder text-center modal-enter">
+            <div class="w-24 h-24 bg-cuban-coral/10 text-cuban-coral rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="ph-fill ph-hand-palm text-6xl"></i>
+            </div>
+            <h2 class="text-4xl font-serif mb-3" data-i18n="stopConfirmTitle">¿Terminamos por hoy?</h2>
+            <p class="text-cuban-coffee/80 dark:text-cuban-darkMuted font-bold text-lg mb-8" data-i18n="stopConfirmDesc">¡Mira que vas súper bien, mi santa!</p>
+            <div class="flex flex-col gap-4">
+                <button onclick="confirmStop()" class="w-full py-5 rounded-[1.5rem] bg-cuban-coral text-white font-black text-2xl shadow-[0_6px_0_#b84155] btn-press" data-i18n="stopBtnYes">Sí, ¡me la comí!</button>
+                <button onclick="closeModal('stop-modal')" class="w-full py-5 rounded-[1.5rem] bg-white dark:bg-cuban-darkBorder text-cuban-coffee dark:text-white font-bold text-xl border-2 border-cuban-sand dark:border-transparent shadow-sm btn-press" data-i18n="stopBtnNo">Qué va, ¡yo sigo!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Workout Modal -->
+    <div id="delete-modal" class="hidden absolute inset-0 bg-cuban-coffee/70 dark:bg-black/80 z-[60] flex items-center justify-center p-6 backdrop-blur-md transition-opacity">
+        <div class="bg-cuban-stucco dark:bg-cuban-darkCard p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl border-2 border-cuban-sand dark:border-cuban-darkBorder text-center modal-enter">
+            <div class="w-24 h-24 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="ph-bold ph-trash text-6xl"></i>
+            </div>
+            <h2 class="text-4xl font-serif mb-3" data-i18n="deleteConfirmTitle">¿Borrar esto?</h2>
+            <p class="text-cuban-coffee/80 dark:text-cuban-darkMuted font-bold text-lg mb-8" data-i18n="deleteConfirmDesc">Mira que si lo borras se pierde pa' siempre.</p>
+            <div class="flex gap-4">
+                <button onclick="closeModal('delete-modal')" class="flex-1 py-5 rounded-[1.5rem] bg-white dark:bg-cuban-darkBorder text-cuban-coffee dark:text-white font-bold text-xl border-2 border-cuban-sand dark:border-transparent btn-press" data-i18n="btnCancel">Mejor no</button>
+                <button onclick="confirmDelete()" class="flex-1 py-5 rounded-[1.5rem] bg-red-500 text-white font-black text-xl shadow-[0_6px_0_#991b1b] btn-press" data-i18n="btnDelete">Bórralo, dale</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trophy Pack Detail Modal -->
+    <div id="trophy-modal" class="hidden absolute inset-0 bg-cuban-coffee/70 dark:bg-black/80 z-[60] flex flex-col justify-end backdrop-blur-md transition-opacity">
+        <div class="bg-cuban-stucco dark:bg-cuban-darkCard rounded-t-[2.5rem] w-full max-w-lg mx-auto shadow-2xl flex flex-col max-h-[85vh] modal-enter border-t-4 border-cuban-teal">
+            <div class="sticky top-0 bg-cuban-stucco/95 dark:bg-cuban-darkCard/95 backdrop-blur-md px-6 py-6 border-b border-cuban-sand/50 dark:border-cuban-darkBorder flex justify-between items-center rounded-t-[2.5rem] z-10">
+                <h2 class="text-3xl font-serif text-cuban-teal dark:text-cuban-tealLight" id="trophy-modal-title">Theme Title</h2>
+                <button onclick="closeModal('trophy-modal')" class="p-3 bg-white dark:bg-cuban-darkBorder text-cuban-coffee dark:text-white rounded-full shadow-sm btn-press">
+                    <i class="ph-bold ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="grid grid-cols-2 gap-4" id="trophy-modal-grid">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FULL SCREEN SETTINGS MENU (UX Optimized for Thumbs) -->
+    <div id="settings-modal" class="hidden absolute inset-0 bg-cuban-stucco dark:bg-cuban-darkBg z-50 flex flex-col overflow-y-auto pb-32 modal-enter">
+        <div class="sticky top-0 bg-cuban-stucco/90 dark:bg-cuban-darkBg/90 backdrop-blur-md px-6 py-6 flex justify-between items-center border-b border-cuban-sand/50 dark:border-cuban-darkBorder z-10">
+            <h2 class="text-4xl font-serif text-cuban-teal dark:text-cuban-tealLight" data-i18n="settingsTitle">Ajustes</h2>
+            <button onclick="saveSettings()" class="py-3 px-6 bg-cuban-coral text-white font-bold text-xl rounded-2xl shadow-md btn-press" data-i18n="saveBtn">Guardar</button>
+        </div>
+
+        <div class="p-6 space-y-6 max-w-md mx-auto w-full">
+            
+            <div class="bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
+                <label class="block text-xl font-black mb-4 text-cuban-teal dark:text-cuban-tealLight" data-i18n="languageLabel">Idioma</label>
+                <div class="flex bg-cuban-stucco dark:bg-cuban-darkBg rounded-[1.5rem] p-1.5 shadow-inner border border-cuban-sand/50 dark:border-transparent">
+                    <button onclick="setLanguage('es')" id="btn-lang-es" class="flex-1 py-4 rounded-xl font-black text-xl transition-all">Español</button>
+                    <button onclick="setLanguage('en')" id="btn-lang-en" class="flex-1 py-4 rounded-xl font-black text-xl transition-all">English</button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
+                <label class="block text-xl font-black mb-4 text-cuban-teal dark:text-cuban-tealLight" data-i18n="themeLabel">Tema Visual</label>
+                <div class="flex bg-cuban-stucco dark:bg-cuban-darkBg rounded-[1.5rem] p-1.5 shadow-inner border border-cuban-sand/50 dark:border-transparent">
+                    <button onclick="setTheme('light')" id="btn-theme-light" class="flex-1 py-4 rounded-xl font-black text-xl transition-all flex justify-center items-center gap-2"><i class="ph-fill ph-sun text-2xl"></i> Claro</button>
+                    <button onclick="setTheme('dark')" id="btn-theme-dark" class="flex-1 py-4 rounded-xl font-black text-xl transition-all flex justify-center items-center gap-2"><i class="ph-fill ph-moon text-2xl"></i> Oscuro</button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
+                <label class="block text-xl font-black mb-1 text-cuban-teal dark:text-cuban-tealLight" data-i18n="weightLabel">Tu Peso (Libras)</label>
+                <p class="text-base text-cuban-coffee/80 dark:text-cuban-darkMuted font-bold mb-4" data-i18n="weightDesc">Pa' calcular bien las calorías.</p>
+                <input type="number" id="user-weight" class="w-full bg-cuban-stucco dark:bg-cuban-darkBg dark:text-white p-5 rounded-2xl text-3xl font-black border-2 border-cuban-sand dark:border-cuban-darkBorder focus:border-cuban-teal outline-none text-center shadow-inner">
+            </div>
+
+            <!-- REDESIGNED TILE GOAL UX -->
+            <div class="bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
+                <label class="block text-xl font-black mb-1 text-cuban-teal dark:text-cuban-tealLight" data-i18n="goalLabel">Meta de Hoy</label>
+                <p class="text-base text-cuban-coffee/80 dark:text-cuban-darkMuted font-bold mb-4" data-i18n="goalDesc">¿A qué venimos hoy?</p>
+                
+                <input type="hidden" id="goal-type-hidden" value="none">
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button onclick="selectGoalBtn('none')" id="btn-goal-none" class="py-4 rounded-2xl font-black text-lg border-2 btn-press transition-colors" data-i18n="goalNone">Libre</button>
+                    <button onclick="selectGoalBtn('time')" id="btn-goal-time" class="py-4 rounded-2xl font-black text-lg border-2 btn-press transition-colors" data-i18n="goalTime">Tiempo</button>
+                    <button onclick="selectGoalBtn('distance')" id="btn-goal-distance" class="py-4 rounded-2xl font-black text-lg border-2 btn-press transition-colors" data-i18n="goalDistance">Millas</button>
+                    <button onclick="selectGoalBtn('calories')" id="btn-goal-calories" class="py-4 rounded-2xl font-black text-lg border-2 btn-press transition-colors" data-i18n="goalCalories">Calorías</button>
+                </div>
+
+                <div id="goal-value-container" class="hidden animate-[fadeIn_0.2s_ease-out]">
+                    <p class="text-sm font-bold text-cuban-teal mb-2 text-center" id="goal-unit-label">Ingresa la cantidad:</p>
+                    <input type="number" id="goal-value" class="w-full bg-cuban-stucco dark:bg-cuban-darkBg dark:text-white p-5 rounded-2xl text-4xl font-black border-2 border-cuban-sand dark:border-cuban-darkBorder focus:border-cuban-teal outline-none text-center shadow-inner">
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
+                <label class="block text-xl font-black mb-1 text-cuban-teal dark:text-cuban-tealLight" data-i18n="displayLabel">Pantalla Principal</label>
+                <p class="text-base text-cuban-coffee/80 dark:text-cuban-darkMuted font-bold mb-6" data-i18n="displayDesc">¿Qué numeritos quieres ver?</p>
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-black" data-i18n="showTime">Ver Tiempo</span>
+                        <div class="relative inline-block w-16 mr-2 align-middle select-none">
+                            <input type="checkbox" id="toggle-time" checked class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-cuban-sand dark:border-gray-600 appearance-none cursor-pointer z-10 top-0 left-0 transition-all duration-300"/>
+                            <label class="toggle-label block overflow-hidden h-8 rounded-full bg-cuban-sand dark:bg-gray-600 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-black" data-i18n="showDistance">Ver Distancia</span>
+                        <div class="relative inline-block w-16 mr-2 align-middle select-none">
+                            <input type="checkbox" id="toggle-distance" checked class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-cuban-sand dark:border-gray-600 appearance-none cursor-pointer z-10 top-0 left-0 transition-all duration-300"/>
+                            <label class="toggle-label block overflow-hidden h-8 rounded-full bg-cuban-sand dark:bg-gray-600 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-black" data-i18n="showCalories">Ver Calorías</span>
+                        <div class="relative inline-block w-16 mr-2 align-middle select-none">
+                            <input type="checkbox" id="toggle-calories" checked class="toggle-checkbox absolute block w-8 h-8 rounded-full bg-white border-4 border-cuban-sand dark:border-gray-600 appearance-none cursor-pointer z-10 top-0 left-0 transition-all duration-300"/>
+                            <label class="toggle-label block overflow-hidden h-8 rounded-full bg-cuban-sand dark:bg-gray-600 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         TOP BAR (Branding & Global Actions only)
+    =========================================== -->
+    <header class="bg-cuban-teal dark:bg-black text-white rounded-b-[1.5rem] pt-8 pb-3 px-5 shadow-md relative z-10 flex justify-between items-center transition-colors">
+        <h1 class="text-[28px] font-serif tracking-wide text-white dark:text-cuban-tealLight leading-none">Mi Paseo</h1>
+        <div class="flex gap-2.5">
+            <button onclick="toggleFullScreen()" id="fullscreen-btn" class="p-2.5 bg-white/20 dark:bg-white/10 rounded-[14px] active:scale-95 transition-transform backdrop-blur-sm">
+                <i class="ph-bold ph-corners-out text-[22px] text-white"></i>
+            </button>
+            <button onclick="openModal('settings-modal')" class="p-2.5 bg-white/20 dark:bg-white/10 rounded-[14px] active:scale-95 transition-transform backdrop-blur-sm">
+                <i class="ph-bold ph-sliders-horizontal text-[22px] text-white"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         MAIN CONTENT AREA (Fixed frame, inner scroll)
+    =========================================== -->
+    <main class="flex-1 relative flex flex-col w-full max-w-lg mx-auto overflow-hidden">
+        
+        <!-- ==========================================
+             VIEW 1: REMOTE CONTROL
+        =========================================== -->
+        <div id="view-control" class="view-section active flex-1 flex-col px-5 pt-4 pb-32 gap-4 overflow-y-auto">
+            
+            <div class="flex justify-center items-center shrink-0">
+                <div class="bg-white dark:bg-cuban-darkCard px-8 py-3 rounded-full shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
+                    <p class="text-cuban-teal dark:text-cuban-tealLight font-black uppercase tracking-[0.2em] text-sm" id="status-text" data-i18n="statusReady">¡Echando pa' lante!</p>
+                </div>
+            </div>
+
+            <!-- Goal Progress Bar -->
+            <div id="goal-progress-section" class="hidden shrink-0 flex-col items-center bg-white dark:bg-cuban-darkCard p-4 rounded-3xl shadow-sm border border-cuban-sand/50 dark:border-cuban-darkBorder">
+                <div class="flex justify-between w-full text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted mb-2 px-2">
+                    <span data-i18n="goalProgress">Progreso</span>
+                    <span id="goal-percentage">0%</span>
+                </div>
+                <div class="w-full bg-cuban-stucco dark:bg-cuban-darkBg rounded-full h-4 overflow-hidden">
+                    <div class="bg-cuban-coral h-full rounded-full transition-all duration-1000 ease-out" id="goal-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- DYNAMIC METRICS GRID (Responsive CSS Grid Fix) -->
+            <div class="grid w-full gap-3 shrink-0" id="metrics-grid">
+                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[32px] mb-1"></i>
+                    <span class="text-3xl font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-distance">0.00</span>
+                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="distanceLabel">Millas</span>
+                </div>
+                <div id="card-time" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-timer text-cuban-coral text-[32px] mb-1"></i>
+                    <span class="text-3xl font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-time">00:00</span>
+                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="timeLabel">Tiempo</span>
+                </div>
+                <div id="card-calories" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-fire text-amber-500 text-[32px] mb-1"></i>
+                    <span class="text-3xl font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-calories">0</span>
+                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
+                </div>
+            </div>
+
+            <!-- SPEED & RIGHT-HANDED ROCKER -->
+            <div class="flex-1 flex w-full gap-3 items-stretch my-2 min-h-[160px] shrink-0">
+                
+                <div class="flex-1 bg-white dark:bg-cuban-darkCard rounded-[2.5rem] p-4 shadow-md border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col justify-center items-center relative overflow-hidden min-w-0">
+                    <span class="text-lg font-black text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-widest mb-1 z-10" data-i18n="speedLabel">Velocidad</span>
+                    <div class="flex items-baseline gap-1 z-10">
+                        <!-- Font scaled to fit perfectly next to rocker on 390px wide screens -->
+                        <span class="text-[5.5rem] font-black tracking-tighter leading-none text-cuban-teal dark:text-cuban-tealLight" id="current-speed">0.0</span>
+                        <span class="text-2xl font-serif text-cuban-coffee/80 dark:text-cuban-darkMuted italic">mph</span>
+                    </div>
+                </div>
+
+                <!-- Right Thumb Rocker -->
+                <div class="w-28 bg-cuban-sand/40 dark:bg-cuban-darkBorder/30 rounded-[3rem] shadow-inner border-2 border-cuban-sand/50 dark:border-transparent flex flex-col p-2 gap-2 shrink-0">
+                    <button id="btn-faster" class="flex-1 rounded-t-[2.5rem] rounded-b-2xl bg-white dark:bg-cuban-darkCard shadow-[0_6px_0_#A8D5D5] dark:shadow-[0_6px_0_#1e3a3a] flex items-center justify-center text-cuban-teal dark:text-cuban-tealLight btn-press group border border-cuban-sand/30 dark:border-transparent touch-manipulation">
+                        <i class="ph-bold ph-plus text-5xl group-active:scale-90 transition-transform pointer-events-none"></i>
+                    </button>
+                    <button id="btn-slower" class="flex-1 rounded-b-[2.5rem] rounded-t-2xl bg-white dark:bg-cuban-darkCard shadow-[0_6px_0_#F2C7CC] dark:shadow-[0_6px_0_#5c202a] flex items-center justify-center text-cuban-coral btn-press group border border-cuban-sand/30 dark:border-transparent touch-manipulation">
+                        <i class="ph-bold ph-minus text-5xl group-active:scale-90 transition-transform pointer-events-none"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Master Start/Stop -->
+            <div class="mt-auto shrink-0">
+                <button id="master-btn" onclick="togglePower()" class="w-full py-6 rounded-[2.5rem] bg-cuban-teal dark:bg-cuban-tealLight text-white shadow-[0_10px_0_#0F5453] dark:shadow-[0_10px_0_#1f665e] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors">
+                    <span data-i18n="btnStart">¡DALE!</span> <i class="ph-fill ph-play-circle text-5xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 2: HISTORY LIST
+        =========================================== -->
+        <div id="view-history" class="view-section flex-1 flex-col px-6 pt-4 pb-32 gap-6 overflow-y-auto">
+            <h2 class="text-4xl font-serif text-cuban-teal dark:text-cuban-tealLight border-b-2 border-cuban-sand/50 dark:border-cuban-darkBorder pb-4 shrink-0" data-i18n="historyTitle">Tus Pasos</h2>
+            <div class="space-y-4" id="history-container">
+                <!-- JS Populated -->
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 3: ACHIEVEMENTS & STATS (THEMED PACKS)
+        =========================================== -->
+        <div id="view-achievements" class="view-section flex-1 flex-col px-6 pt-4 pb-32 overflow-y-auto">
+            <div class="bg-cuban-coffee dark:bg-black text-white rounded-[2.5rem] p-8 mb-8 shadow-xl relative overflow-hidden shrink-0">
+                <i class="ph-fill ph-crown absolute -right-4 -bottom-4 text-9xl text-white/5 pointer-events-none"></i>
+                <h2 class="text-2xl font-bold uppercase tracking-widest text-cuban-sand mb-8" data-i18n="statsTitle">Resumen de tu Vida</h2>
+                <div class="grid grid-cols-2 gap-y-8 gap-x-4 relative z-10">
+                    <div><p class="text-cuban-sand/80 text-sm font-bold uppercase mb-1" data-i18n="totalMiles">Millas</p><p class="text-5xl font-black" id="stat-tot-miles">0</p></div>
+                    <div><p class="text-cuban-sand/80 text-sm font-bold uppercase mb-1" data-i18n="totalTime">Minutos</p><p class="text-5xl font-black" id="stat-tot-time">0<span class="text-2xl font-normal ml-1">m</span></p></div>
+                    <div><p class="text-cuban-sand/80 text-sm font-bold uppercase mb-1" data-i18n="totalWorkouts">Paseos</p><p class="text-4xl font-black text-cuban-coral" id="stat-tot-workouts">0</p></div>
+                    <div><p class="text-cuban-sand/80 text-sm font-bold uppercase mb-1" data-i18n="totalCalories">Calorías</p><p class="text-4xl font-black text-orange-400" id="stat-tot-cal">0</p></div>
+                </div>
+            </div>
+            
+            <h2 class="text-4xl font-serif text-cuban-teal dark:text-cuban-tealLight mb-6 border-b-2 border-cuban-sand/50 dark:border-cuban-darkBorder pb-4 shrink-0" data-i18n="trophiesTitle">Tus Colecciones</h2>
+            
+            <!-- Theme Pack Cards -->
+            <div class="space-y-4 shrink-0">
+                <button onclick="openTrophyPack('streaks')" class="w-full bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder flex items-center justify-between btn-press">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shadow-inner"><i class="ph-fill ph-fire text-4xl"></i></div>
+                        <div class="text-left">
+                            <h3 class="text-2xl font-black text-cuban-coffee dark:text-white" data-i18n="packStreaks">Dando la Talla (Rachas)</h3>
+                            <p class="text-base font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted" id="prog-streaks">0 / 6</p>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-3xl text-cuban-coffee/60 dark:text-cuban-darkMuted"></i>
+                </button>
+
+                <button onclick="openTrophyPack('distance')" class="w-full bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder flex items-center justify-between btn-press">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shadow-inner"><i class="ph-fill ph-map-pin text-4xl"></i></div>
+                        <div class="text-left">
+                            <h3 class="text-2xl font-black text-cuban-coffee dark:text-white" data-i18n="packDistance">Echando Pata</h3>
+                            <p class="text-base font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted" id="prog-distance">0 / 6</p>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-3xl text-cuban-coffee/60 dark:text-cuban-darkMuted"></i>
+                </button>
+
+                <button onclick="openTrophyPack('cuban')" class="w-full bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder flex items-center justify-between btn-press">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-pink-100 text-cuban-coral flex items-center justify-center shadow-inner"><i class="ph-fill ph-music-notes text-4xl"></i></div>
+                        <div class="text-left">
+                            <h3 class="text-2xl font-black text-cuban-coffee dark:text-white" data-i18n="packCuban">A Lo Cubano</h3>
+                            <p class="text-base font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted" id="prog-cuban">0 / 6</p>
+                        </div>
+                    </div>
+                    <i class="ph-bold ph-caret-right text-3xl text-cuban-coffee/60 dark:text-cuban-darkMuted"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             VIEW 4: INDIVIDUAL WORKOUT DETAIL
+        =========================================== -->
+        <div id="view-workout-detail" class="view-section flex-1 flex-col px-6 pt-6 pb-32 z-20 bg-cuban-stucco dark:bg-cuban-darkBg absolute inset-0 overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-cuban-sand/50 dark:border-cuban-darkBorder shrink-0">
+                <button onclick="switchView('history')" class="p-3 bg-white dark:bg-cuban-darkCard rounded-full shadow-sm border-2 border-cuban-sand dark:border-transparent btn-press">
+                    <i class="ph-bold ph-caret-left text-3xl"></i>
+                </button>
+                <h2 class="text-3xl font-serif text-cuban-teal dark:text-cuban-tealLight" data-i18n="summaryTitle">Resumen</h2>
+                <button onclick="promptDeleteDetail()" class="p-3 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full shadow-sm border-2 border-red-100 dark:border-transparent btn-press">
+                    <i class="ph-bold ph-trash text-3xl"></i>
+                </button>
+            </div>
+
+            <div class="text-center mt-6 mb-8 shrink-0">
+                <h3 class="text-4xl font-black" id="detail-date">Hoy</h3>
+                <p class="text-xl font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-widest mt-1" id="detail-time">9:30 AM</p>
+            </div>
+
+            <div class="relative w-64 h-64 mx-auto mb-10 flex items-center justify-center shrink-0">
+                <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                    <circle cx="128" cy="128" r="110" stroke="#EEDCB8" stroke-width="16" fill="transparent" opacity="0.4" class="dark:stroke-gray-600"/>
+                    <circle cx="128" cy="128" r="110" stroke="#14746F" stroke-width="16" fill="transparent" stroke-dasharray="691" stroke-dashoffset="150" stroke-linecap="round" id="detail-ring" class="dark:stroke-[#2A9D8F]"/>
+                </svg>
+                <div class="text-center">
+                    <span class="text-[4.5rem] font-black text-cuban-teal dark:text-cuban-tealLight tracking-tighter block leading-none" id="detail-distance">0.00</span>
+                    <span class="text-2xl font-serif text-cuban-coffee/80 dark:text-cuban-darkMuted italic block mt-1">Millas</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-8 shrink-0">
+                <div class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-6 shadow-sm border-2 border-cuban-sand/40 dark:border-cuban-darkBorder text-center">
+                    <i class="ph-fill ph-timer text-cuban-coral text-4xl mb-3"></i>
+                    <p class="text-4xl font-black text-cuban-coffee dark:text-white" id="detail-duration">00:00</p>
+                    <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="timeLabel">Tiempo</p>
+                </div>
+                <div class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-6 shadow-sm border-2 border-cuban-sand/40 dark:border-cuban-darkBorder text-center">
+                    <i class="ph-fill ph-fire text-amber-500 text-4xl mb-3"></i>
+                    <p class="text-4xl font-black text-cuban-coffee dark:text-white" id="detail-cals">0</p>
+                    <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="caloriesLabel">Calorías</p>
+                </div>
+            </div>
+
+            <div id="resume-container" class="mt-auto shrink-0 pb-4"></div>
+        </div>
+
+    </main>
+
+    <!-- ==========================================
+         BOTTOM NAVIGATION BAR (Thumb Friendly)
+    =========================================== -->
+    <nav class="fixed bottom-0 w-full bg-white dark:bg-cuban-darkCard border-t-2 border-cuban-sand/50 dark:border-cuban-darkBorder shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-[40]">
+        <div class="flex justify-around items-center px-2 pt-3 pb-6"> <!-- pb-6 for home indicator clearance on modern phones -->
+            
+            <button onclick="switchView('control')" id="nav-control" class="nav-btn active flex flex-col items-center gap-1 w-24 relative btn-press">
+                <!-- TV Remote Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" viewBox="0 0 256 256"><path d="M184,32H72A24,24,0,0,0,48,56V200a24,24,0,0,0,24,24H184a24,24,0,0,0,24-24V56A24,24,0,0,0,184,32ZM72,48H184a8,8,0,0,1,8,8v48H64V56A8,8,0,0,1,72,48ZM184,208H72a8,8,0,0,1-8-8V120H192v80A8,8,0,0,1,184,208ZM112,80a12,12,0,1,1,12-12A12,12,0,0,1,112,80ZM96,152a16,16,0,1,1,16-16A16,16,0,0,1,96,152Zm64,0a16,16,0,1,1,16-16A16,16,0,0,1,160,152Zm-64,48a16,16,0,1,1,16-16A16,16,0,0,1,96,200Zm64,0a16,16,0,1,1,16-16A16,16,0,0,1,160,200Z"></path></svg>
+                <span class="text-[11px] uppercase tracking-widest font-black" data-i18n="navRemote">Control</span>
+                <div class="nav-indicator absolute -top-4 w-12 h-1.5 rounded-full bg-cuban-teal dark:bg-cuban-tealLight"></div>
+            </button>
+            
+            <button onclick="switchView('history')" id="nav-history" class="nav-btn flex flex-col items-center gap-1 w-24 relative btn-press">
+                <i class="ph-fill ph-notebook text-[36px]"></i>
+                <span class="text-[11px] uppercase tracking-widest font-black" data-i18n="navHistory">Historial</span>
+                <div class="nav-indicator absolute -top-4 w-12 h-1.5 rounded-full bg-cuban-teal dark:bg-cuban-tealLight"></div>
+            </button>
+
+            <button onclick="switchView('achievements')" id="nav-achievements" class="nav-btn flex flex-col items-center gap-1 w-24 relative btn-press">
+                <i class="ph-fill ph-medal text-[36px]"></i>
+                <span class="text-[11px] uppercase tracking-widest font-black" data-i18n="navTrophies">Logros</span>
+                <div class="nav-indicator absolute -top-4 w-12 h-1.5 rounded-full bg-cuban-teal dark:bg-cuban-tealLight"></div>
+            </button>
+            
+        </div>
+    </nav>
+
+    <script>
+        // --- CUBAN/HIALEAH TRANSLATION DICTIONARY ---
+        const i18n = {
+            es: {
+                navRemote: "Control", navHistory: "Historial", navTrophies: "Logros",
+                statusReady: "¡Echando pa' lante!", statusWalking: "¡Echando humo! 🔥", statusSaved: "¡Tremendo Despelote! (Guardao)",
+                speedLabel: "Velocidad", timeLabel: "Tiempo", distanceLabel: "Millas", caloriesLabel: "Calorías",
+                btnStart: "¡DALE!", btnStop: "PARA AHÍ", historyTitle: "Tus Pasos", statsTitle: "Tu Trayectoria",
+                totalMiles: "Millas", totalTime: "Minutos", totalWorkouts: "Paseos", totalCalories: "Calorías",
+                trophiesTitle: "Tus Colecciones", summaryTitle: "Resumen", btnResume: "Sigue Caminando",
+                stopConfirmTitle: "¿Terminamos por hoy?", stopConfirmDesc: "¡Mira que vas súper bien, mi santa!",
+                stopBtnYes: "Sí, ¡me la comí!", stopBtnNo: "Qué va, ¡yo sigo!",
+                deleteConfirmTitle: "¿Borrar esto?", deleteConfirmDesc: "Mira que si lo borras se pierde pa' siempre.",
+                btnCancel: "Mejor no", btnDelete: "Bórralo, dale", settingsTitle: "Ajustes", saveBtn: "Guardar",
+                languageLabel: "Idioma", themeLabel: "Estilo Visual",
+                weightLabel: "Tu Peso (Libras)", weightDesc: "Dime la verdad pa' calcular bien las calorías.",
+                goalLabel: "Meta de Hoy", goalDesc: "¿A qué venimos hoy?",
+                goalNone: "Libre", goalTime: "Tiempo", goalDistance: "Millas", goalCalories: "Calorías",
+                displayLabel: "Pantalla Principal", displayDesc: "¿Qué numeritos quieres ver?",
+                showTime: "Ver Tiempo", showDistance: "Ver Distancia", showCalories: "Ver Calorías", goalProgress: "Progreso",
+                
+                // Pack Names
+                packStreaks: "Dando la Talla (Rachas)", packDistance: "Echando Pata (Distancia)", packCuban: "A Lo Cubano",
+                
+                // Streaks Trophies
+                s3T: "La Chispa", s3D: "3 Días Seguidos", s7T: "Candela", s7D: "7 Días Seguidos", 
+                s14T: "La Llama", s14D: "14 Días Seguidos", s30T: "Fuego", s30D: "1 Mes de Racha",
+                s50T: "Volcán", s50D: "50 Días Seguidos", s100T: "Estrella", s100D: "100 Días de Racha",
+                
+                // Distance Trophies
+                d10T: "La Vecina", d10D: "10 Millas Total", d26T: "Maratón", d26D: "26.2 Millas Total",
+                d50T: "Exploradora", d50D: "50 Millas Total", d100T: "Viajera", d100D: "100 Millas Total",
+                d250T: "Aventurera", d250D: "250 Millas Total", d500T: "Leyenda", d500D: "500 Millas Total",
+                
+                // Cuban Trophies
+                c1T: "Cafecito", c1D: "Caminó a las 6 AM", c2T: "¡Azúcar!", c2D: "Velocidad mayor a 3.5",
+                c3T: "Chancleta", c3D: "Velocidad mayor a 4.0", c4T: "Dominó", c4D: "2 paseos en 1 día",
+                c5T: "Ropa Vieja", c5D: "Más de 60 minutos", c6T: "Celia", c6D: "Quemó 500 calorías"
+            },
+            en: {
+                navRemote: "Remote", navHistory: "History", navTrophies: "Trophies",
+                statusReady: "Ready to walk!", statusWalking: "Walking...", statusSaved: "Workout Saved",
+                speedLabel: "Speed", timeLabel: "Time", distanceLabel: "Miles", caloriesLabel: "Calories",
+                btnStart: "START", btnStop: "STOP", historyTitle: "History", statsTitle: "Lifetime Summary",
+                totalMiles: "Miles", totalTime: "Minutes", totalWorkouts: "Workouts", totalCalories: "Calories",
+                trophiesTitle: "Collections", summaryTitle: "Summary", btnResume: "Resume Workout",
+                stopConfirmTitle: "Finished?", stopConfirmDesc: "Look at you go! Are you sure you want to stop?",
+                stopBtnYes: "Yes, I crushed it!", stopBtnNo: "No, Keep Walking",
+                deleteConfirmTitle: "Delete?", deleteConfirmDesc: "This action cannot be undone.",
+                btnCancel: "Cancel", btnDelete: "Delete", settingsTitle: "Settings", saveBtn: "Save",
+                languageLabel: "Language", themeLabel: "Visual Theme",
+                weightLabel: "Your Weight (Lbs)", weightDesc: "To accurately calculate calories.",
+                goalLabel: "Workout Goal", goalDesc: "What do you want to achieve?",
+                goalNone: "Free Walk", goalTime: "Time", goalDistance: "Miles", goalCalories: "Calories",
+                displayLabel: "Dashboard Display", displayDesc: "Choose what to see while walking.",
+                showTime: "Show Time", showDistance: "Show Distance", showCalories: "Show Calories", goalProgress: "Goal Progress",
+                
+                packStreaks: "Daily Streaks", packDistance: "Total Distance", packCuban: "Cuban Power",
+                
+                s3T: "The Spark", s3D: "3 Day Streak", s7T: "On Fire", s7D: "7 Day Streak", 
+                s14T: "The Flame", s14D: "14 Day Streak", s30T: "Inferno", s30D: "1 Month Streak",
+                s50T: "Volcano", s50D: "50 Day Streak", s100T: "Superstar", s100D: "100 Day Streak",
+                
+                d10T: "The Local", d10D: "10 Miles Total", d26T: "Marathon", d26D: "26.2 Miles Total",
+                d50T: "Explorer", d50D: "50 Miles Total", d100T: "Traveler", d100D: "100 Miles Total",
+                d250T: "Adventurer", d250D: "250 Miles Total", d500T: "Legend", d500D: "500 Miles Total",
+                
+                c1T: "Cafecito", c1D: "Walked at 6 AM", c2T: "¡Azúcar!", c2D: "Speed over 3.5",
+                c3T: "Chancleta", c3D: "Speed over 4.0", c4T: "Domino", c4D: "2 walks in 1 day",
+                c5T: "Ropa Vieja", c5D: "Over 60 minutes", c6T: "Celia", c6D: "Burned 500 cals"
+            }
+        };
+
+        // --- APP STATE ---
+        const appState = {
+            lang: localStorage.getItem('appLang') || 'es',
+            theme: localStorage.getItem('appTheme') || 'light',
+            weightLbs: parseFloat(localStorage.getItem('weightLbs')) || 150,
+            goalType: localStorage.getItem('goalType') || 'none',
+            goalValue: parseFloat(localStorage.getItem('goalValue')) || 0,
+            showTime: localStorage.getItem('showTime') !== 'false',
+            showDistance: localStorage.getItem('showDistance') !== 'false',
+            showCalories: localStorage.getItem('showCalories') !== 'false',
+            
+            isWalking: false, currentSpeed: 0.0, currentDistance: 0.0, currentCalories: 0,
+            secondsElapsed: 0, timerInterval: null, activeWorkoutId: null, pendingDeleteId: null,
+            
+            totalLifetimeMiles: 0, maxStreak: 0
+        };
+
+        let workoutHistory = JSON.parse(localStorage.getItem('workoutHistory')) || [];
+
+        // --- FULL EXPANDED TROPHY DATA ---
+        const badgePacks = {
+            streaks: [
+                { id: 's3', tKey: 's3T', dKey: 's3D', icon: 'ph-fire', color: 'text-orange-500 bg-orange-100', req: (s) => s.maxStreak >= 3 },
+                { id: 's7', tKey: 's7T', dKey: 's7D', icon: 'ph-fire', color: 'text-orange-500 bg-orange-100', req: (s) => s.maxStreak >= 7 },
+                { id: 's14', tKey: 's14T', dKey: 's14D', icon: 'ph-fire', color: 'text-orange-500 bg-orange-100', req: (s) => s.maxStreak >= 14 },
+                { id: 's30', tKey: 's30T', dKey: 's30D', icon: 'ph-fire', color: 'text-red-500 bg-red-100', req: (s) => s.maxStreak >= 30 },
+                { id: 's50', tKey: 's50T', dKey: 's50D', icon: 'ph-fire', color: 'text-red-500 bg-red-100', req: (s) => s.maxStreak >= 50 },
+                { id: 's100', tKey: 's100T', dKey: 's100D', icon: 'ph-star', color: 'text-yellow-500 bg-yellow-100', req: (s) => s.maxStreak >= 100 }
+            ],
+            distance: [
+                { id: 'd10', tKey: 'd10T', dKey: 'd10D', icon: 'ph-map-pin', color: 'text-blue-500 bg-blue-100', req: (s) => s.totalLifetimeMiles >= 10 },
+                { id: 'd26', tKey: 'd26T', dKey: 'd26D', icon: 'ph-sneaker', color: 'text-purple-500 bg-purple-100', req: (s) => s.totalLifetimeMiles >= 26.2 },
+                { id: 'd50', tKey: 'd50T', dKey: 'd50D', icon: 'ph-compass', color: 'text-green-500 bg-green-100', req: (s) => s.totalLifetimeMiles >= 50 },
+                { id: 'd100', tKey: 'd100T', dKey: 'd100D', icon: 'ph-airplane-tilt', color: 'text-indigo-500 bg-indigo-100', req: (s) => s.totalLifetimeMiles >= 100 },
+                { id: 'd250', tKey: 'd250T', dKey: 'd250D', icon: 'ph-mountains', color: 'text-teal-500 bg-teal-100', req: (s) => s.totalLifetimeMiles >= 250 },
+                { id: 'd500', tKey: 'd500T', dKey: 'd500D', icon: 'ph-crown', color: 'text-yellow-600 bg-yellow-100', req: (s) => s.totalLifetimeMiles >= 500 }
+            ],
+            cuban: [
+                { id: 'c1', tKey: 'c1T', dKey: 'c1D', icon: 'ph-coffee', color: 'text-cuban-coffee bg-cuban-sand', req: (s) => false },
+                { id: 'c2', tKey: 'c2T', dKey: 'c2D', icon: 'ph-music-notes', color: 'text-cuban-coral bg-pink-100', req: (s) => false },
+                { id: 'c3', tKey: 'c3T', dKey: 'c3D', icon: 'ph-wind', color: 'text-cyan-500 bg-cyan-100', req: (s) => false },
+                { id: 'c4', tKey: 'c4T', dKey: 'c4D', icon: 'ph-dice-six', color: 'text-gray-800 bg-gray-200', req: (s) => false },
+                { id: 'c5', tKey: 'c5T', dKey: 'c5D', icon: 'ph-t-shirt', color: 'text-orange-600 bg-orange-100', req: (s) => false },
+                { id: 'c6', tKey: 'c6T', dKey: 'c6D', icon: 'ph-microphone-stage', color: 'text-purple-600 bg-purple-100', req: (s) => false }
+            ]
+        };
+
+        // --- INITIALIZATION ---
+        function initApp() {
+            setTheme(appState.theme);
+            document.getElementById('user-weight').value = appState.weightLbs;
+            
+            // Init Goal UI
+            document.getElementById('goal-type-hidden').value = appState.goalType;
+            selectGoalBtn(appState.goalType, false); // Initialize visual without toggling input animation
+            if(appState.goalValue > 0) document.getElementById('goal-value').value = appState.goalValue;
+            toggleGoalInput();
+            updateDisplayGrid();
+            setLanguage(appState.lang); 
+            renderHistory();
+            calculateLifetimeStats();
+            
+            // Attach touch/hold listeners for speed rocker
+            attachHoldEvents('btn-faster', 'faster');
+            attachHoldEvents('btn-slower', 'slower');
+        }
+
+        // --- UI & THEME LOGIC ---
+        function setTheme(theme) {
+            appState.theme = theme;
+            localStorage.setItem('appTheme', theme);
+            if(theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('btn-theme-dark').className = "flex-1 py-4 rounded-xl font-black text-xl transition-all flex justify-center items-center gap-2 bg-cuban-tealLight text-white shadow-md border border-transparent";
+                document.getElementById('btn-theme-light').className = "flex-1 py-4 rounded-xl font-black text-xl transition-all flex justify-center items-center gap-2 text-cuban-coffee/50 dark:text-cuban-darkMuted border border-transparent";
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('btn-theme-light').className = "flex-1 py-4 rounded-xl font-black text-xl transition-all flex justify-center items-center gap-2 bg-cuban-teal text-white shadow-md border border-transparent";
+                document.getElementById('btn-theme-dark').className = "flex-1 py-4 rounded-xl font-black text-xl transition-all flex justify-center items-center gap-2 text-cuban-coffee/50 dark:text-cuban-darkMuted border border-transparent";
+            }
+        }
+
+        function toggleFullScreen() {
+            const doc = document.documentElement;
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+            if (!isFullscreen) {
+                if (doc.requestFullscreen) doc.requestFullscreen().catch(err => console.log(err));
+                else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+                else if (doc.mozRequestFullScreen) doc.mozRequestFullScreen();
+                else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+                else if (document.msExitFullscreen) document.msExitFullscreen();
+            }
+        }
+
+        function updateFullscreenIcon() {
+            const btn = document.getElementById('fullscreen-btn');
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (isFullscreen) {
+                btn.innerHTML = '<i class="ph-bold ph-corners-in text-[22px] text-white"></i>';
+            } else {
+                btn.innerHTML = '<i class="ph-bold ph-corners-out text-[22px] text-white"></i>';
+            }
+        }
+
+        // Listen for all vendor-specific fullscreen changes to update icon accurately
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+        document.addEventListener('mozfullscreenchange', updateFullscreenIcon);
+        document.addEventListener('MSFullscreenChange', updateFullscreenIcon);
+
+        function applyTranslations() {
+            const t = i18n[appState.lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    if(key === 'btnStart' || key === 'btnStop') el.innerText = t[key]; 
+                    else el.textContent = t[key];
+                }
+            });
+            renderBadgesSummary(); 
+        }
+
+        function setLanguage(lang) {
+            appState.lang = lang;
+            localStorage.setItem('appLang', lang);
+            document.getElementById('btn-lang-es').className = lang === 'es' ? "flex-1 py-4 rounded-xl font-black text-xl bg-cuban-coral text-white shadow-md border border-transparent" : "flex-1 py-4 rounded-xl font-black text-xl text-cuban-coffee/50 dark:text-cuban-darkMuted border border-transparent";
+            document.getElementById('btn-lang-en').className = lang === 'en' ? "flex-1 py-4 rounded-xl font-black text-xl bg-cuban-coral text-white shadow-md border border-transparent" : "flex-1 py-4 rounded-xl font-black text-xl text-cuban-coffee/50 dark:text-cuban-darkMuted border border-transparent";
+            applyTranslations();
+            renderHistory();
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            if(viewName !== 'workout-detail') {
+                document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+                document.getElementById(`nav-${viewName}`).classList.add('active');
+            }
+            document.getElementById(`view-${viewName}`).classList.add('active');
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // --- TROPHY MODAL LOGIC ---
+        function openTrophyPack(packKey) {
+            const t = i18n[appState.lang];
+            const packNameKey = packKey === 'streaks' ? 'packStreaks' : packKey === 'distance' ? 'packDistance' : 'packCuban';
+            document.getElementById('trophy-modal-title').innerText = t[packNameKey];
+            
+            const grid = document.getElementById('trophy-modal-grid');
+            grid.innerHTML = '';
+            
+            badgePacks[packKey].forEach(b => {
+                const earned = b.req(appState);
+                const earnedOpacity = earned ? 'opacity-100' : 'opacity-40 grayscale';
+                const lockIcon = earned ? '' : '<div class="absolute -top-2 -right-2 bg-cuban-darkBorder text-white rounded-full p-1"><i class="ph-fill ph-lock text-sm"></i></div>';
+                
+                grid.innerHTML += `
+                    <div class="bg-white dark:bg-cuban-darkBg p-5 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder flex flex-col items-center text-center ${earnedOpacity} relative">
+                        ${lockIcon}
+                        <div class="w-20 h-20 rounded-full ${b.color} flex items-center justify-center mb-4 shadow-inner"><i class="ph-fill ${b.icon} text-[40px]"></i></div>
+                        <h4 class="font-black text-cuban-coffee dark:text-white text-lg leading-tight mb-1">${t[b.tKey]}</h4>
+                        <p class="text-xs font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase">${t[b.dKey]}</p>
+                    </div>
+                `;
+            });
+            openModal('trophy-modal');
+        }
+
+        function renderBadgesSummary() {
+            const packs = ['streaks', 'distance', 'cuban'];
+            packs.forEach(pack => {
+                const total = badgePacks[pack].length;
+                const earned = badgePacks[pack].filter(b => b.req(appState)).length;
+                document.getElementById(`prog-${pack}`).innerText = `${earned} / ${total} Logros`;
+            });
+        }
+
+        // --- SETTINGS (TILE SELECTION & SAVING) ---
+        function selectGoalBtn(type, animate = true) {
+            document.getElementById('goal-type-hidden').value = type;
+            const btns = ['none', 'time', 'distance', 'calories'];
+            
+            btns.forEach(b => {
+                const el = document.getElementById(`btn-goal-${b}`);
+                if(b === type) {
+                    el.className = "py-4 rounded-2xl font-black text-lg btn-press transition-colors bg-cuban-teal dark:bg-cuban-tealLight text-white border-2 border-transparent shadow-md";
+                } else {
+                    el.className = "py-4 rounded-2xl font-black text-lg btn-press transition-colors bg-white dark:bg-cuban-darkBg text-cuban-coffee/60 dark:text-cuban-darkMuted border-2 border-cuban-sand/50 dark:border-cuban-darkBorder";
+                }
+            });
+            
+            toggleGoalInput(animate);
+        }
+
+        function toggleGoalInput(animate = true) {
+            const val = document.getElementById('goal-type-hidden').value;
+            const container = document.getElementById('goal-value-container');
+            const input = document.getElementById('goal-value');
+            const label = document.getElementById('goal-unit-label');
+            
+            if (val === 'none') { 
+                container.classList.add('hidden'); 
+            } else { 
+                if(animate) {
+                    container.classList.remove('hidden');
+                    // Retrigger animation
+                    container.classList.remove('animate-[fadeIn_0.2s_ease-out]');
+                    void container.offsetWidth; // trigger reflow
+                    container.classList.add('animate-[fadeIn_0.2s_ease-out]');
+                } else {
+                    container.classList.remove('hidden');
+                }
+                
+                if (val === 'time') { input.placeholder = "30"; label.innerText = appState.lang === 'es' ? "Minutos a caminar:" : "Minutes to walk:"; }
+                else if (val === 'distance') { input.placeholder = "2.5"; label.innerText = appState.lang === 'es' ? "Millas a caminar:" : "Miles to walk:"; }
+                else if (val === 'calories') { input.placeholder = "200"; label.innerText = appState.lang === 'es' ? "Calorías a quemar:" : "Calories to burn:"; }
+            }
+        }
+
+        function saveSettings() {
+            appState.weightLbs = parseFloat(document.getElementById('user-weight').value) || 150;
+            appState.goalType = document.getElementById('goal-type-hidden').value;
+            appState.goalValue = parseFloat(document.getElementById('goal-value').value) || 0;
+            appState.showTime = document.getElementById('toggle-time').checked;
+            appState.showDistance = document.getElementById('toggle-distance').checked;
+            appState.showCalories = document.getElementById('toggle-calories').checked;
+            
+            localStorage.setItem('weightLbs', appState.weightLbs);
+            localStorage.setItem('goalType', appState.goalType);
+            localStorage.setItem('goalValue', appState.goalValue);
+            localStorage.setItem('showTime', appState.showTime);
+            localStorage.setItem('showDistance', appState.showDistance);
+            localStorage.setItem('showCalories', appState.showCalories);
+            
+            updateDisplayGrid();
+            closeModal('settings-modal');
+        }
+
+        function updateDisplayGrid() {
+            const cTime = document.getElementById('card-time');
+            const cDist = document.getElementById('card-distance');
+            const cCal = document.getElementById('card-calories');
+            const goalSec = document.getElementById('goal-progress-section');
+            const grid = document.getElementById('metrics-grid');
+            
+            cTime.classList.toggle('hidden', !appState.showTime);
+            cDist.classList.toggle('hidden', !appState.showDistance);
+            cCal.classList.toggle('hidden', !appState.showCalories);
+            
+            const visibleCount = [appState.showTime, appState.showDistance, appState.showCalories].filter(Boolean).length;
+            
+            // Clean classes
+            grid.className = 'grid w-full gap-3 shrink-0';
+            cDist.classList.remove('col-span-2');
+            cTime.classList.remove('col-span-2');
+            cCal.classList.remove('col-span-2');
+            
+            if (visibleCount === 3) {
+                grid.classList.add('grid-cols-2');
+                cCal.classList.add('col-span-2'); // Calories full width on bottom
+            } else if (visibleCount === 2) {
+                grid.classList.add('grid-cols-2');
+            } else if (visibleCount === 1) {
+                grid.classList.add('grid-cols-1');
+            }
+            
+            if(appState.goalType !== 'none' && appState.goalValue > 0) {
+                goalSec.classList.remove('hidden'); goalSec.classList.add('flex');
+            } else {
+                goalSec.classList.add('hidden'); goalSec.classList.remove('flex');
+            }
+        }
+
+        // --- WORKOUT LOGIC ---
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60); const s = Math.floor(totalSeconds % 60);
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateGoalProgress() {
+            if(appState.goalType === 'none' || appState.goalValue <= 0) return;
+            let percent = 0;
+            if (appState.goalType === 'time') percent = (appState.secondsElapsed / (appState.goalValue * 60)) * 100;
+            if (appState.goalType === 'distance') percent = (appState.currentDistance / appState.goalValue) * 100;
+            if (appState.goalType === 'calories') percent = (appState.currentCalories / appState.goalValue) * 100;
+            percent = Math.min(Math.max(percent, 0), 100);
+            document.getElementById('goal-percentage').innerText = `${Math.floor(percent)}%`;
+            document.getElementById('goal-bar').style.width = `${percent}%`;
+            if(percent >= 100) document.getElementById('goal-bar').classList.replace('bg-cuban-coral', 'bg-cuban-teal');
+        }
+
+        function tickTimer() {
+            appState.secondsElapsed++;
+            appState.currentDistance += (appState.currentSpeed * (1/3600)); 
+            appState.currentCalories = appState.currentDistance * appState.weightLbs * 0.53;
+            
+            document.getElementById('current-time').innerText = formatTime(appState.secondsElapsed);
+            document.getElementById('current-calories').innerText = Math.floor(appState.currentCalories);
+            document.getElementById('current-distance').innerText = appState.currentDistance.toFixed(2);
+            updateGoalProgress();
+        }
+
+        function sendCommand(action) {
+            if (navigator.vibrate) navigator.vibrate(20); // Softer vibrate for continuous holding
+            if(action === 'faster') appState.currentSpeed += 0.1;
+            if(action === 'slower' && appState.currentSpeed >= 0.1) appState.currentSpeed -= 0.1;
+            
+            // Prevent JS floating point weirdness (e.g. 1.0 - 0.1 = 0.89999)
+            appState.currentSpeed = Math.round(appState.currentSpeed * 10) / 10;
+            if(appState.currentSpeed < 0) appState.currentSpeed = 0;
+            
+            document.getElementById('current-speed').innerText = appState.currentSpeed.toFixed(1);
+        }
+
+        // --- LONG PRESS SPEED CONTROL UX ---
+        let speedInterval;
+        let speedTimeout;
+
+        function startSpeedAdjust(action) {
+            sendCommand(action); // Immediate adjustment on tap
+            // Wait 400ms before starting continuous scrolling
+            speedTimeout = setTimeout(() => {
+                speedInterval = setInterval(() => { sendCommand(action); }, 150); 
+            }, 400);
+        }
+
+        function stopSpeedAdjust() {
+            clearTimeout(speedTimeout);
+            clearInterval(speedInterval);
+        }
+
+        function attachHoldEvents(btnId, action) {
+            const btn = document.getElementById(btnId);
+            if(!btn) return;
+            // Desktop fallback
+            btn.addEventListener('mousedown', () => startSpeedAdjust(action));
+            btn.addEventListener('mouseup', stopSpeedAdjust);
+            btn.addEventListener('mouseleave', stopSpeedAdjust);
+            
+            // Mobile smooth touch handling
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevents ghost clicks
+                startSpeedAdjust(action);
+            }, {passive: false});
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                stopSpeedAdjust();
+            }, {passive: false});
+            btn.addEventListener('touchcancel', stopSpeedAdjust);
+        }
+
+        function togglePower() {
+            if (navigator.vibrate) navigator.vibrate([60, 60, 60]);
+            if (appState.isWalking) {
+                openModal('stop-modal');
+            } else {
+                if(!appState.activeWorkoutId) {
+                    appState.secondsElapsed = 0; appState.currentDistance = 0; appState.currentCalories = 0; appState.currentSpeed = 1.0; 
+                    document.getElementById('goal-bar').classList.replace('bg-cuban-teal', 'bg-cuban-coral');
+                }
+                document.getElementById('current-speed').innerText = appState.currentSpeed.toFixed(1);
+                appState.isWalking = true;
+                appState.timerInterval = setInterval(tickTimer, 1000);
+                
+                const btn = document.getElementById('master-btn');
+                const status = document.getElementById('status-text');
+                btn.className = "w-full py-7 rounded-[2.5rem] bg-cuban-coral text-white shadow-[0_10px_0_#b84155] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors";
+                btn.innerHTML = `<span data-i18n="btnStop">${i18n[appState.lang].btnStop}</span> <i class="ph-fill ph-stop-circle text-5xl"></i>`;
+                status.innerText = i18n[appState.lang].statusWalking;
+                status.className = "text-cuban-coral font-black uppercase tracking-[0.2em] text-sm";
+            }
+        }
+
+        function confirmStop() {
+            closeModal('stop-modal');
+            clearInterval(appState.timerInterval);
+            appState.isWalking = false;
+
+            const btn = document.getElementById('master-btn');
+            btn.className = "w-full py-7 rounded-[2.5rem] bg-cuban-teal dark:bg-cuban-tealLight text-white shadow-[0_10px_0_#0F5453] dark:shadow-[0_10px_0_#1f665e] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors";
+            btn.innerHTML = `<span data-i18n="btnStart">${i18n[appState.lang].btnStart}</span> <i class="ph-fill ph-play-circle text-5xl"></i>`;
+            document.getElementById('status-text').innerText = i18n[appState.lang].statusSaved;
+            document.getElementById('status-text').className = "text-cuban-teal dark:text-cuban-tealLight font-black uppercase tracking-[0.2em] text-sm";
+
+            let workout;
+            if (appState.activeWorkoutId) {
+                workout = workoutHistory.find(w => w.id === appState.activeWorkoutId);
+                workout.distance = appState.currentDistance; workout.duration = appState.secondsElapsed;
+                workout.calories = appState.currentCalories; workout.endTime = Date.now();
+            } else {
+                workout = { id: Date.now(), startTime: Date.now() - (appState.secondsElapsed * 1000), endTime: Date.now(), distance: appState.currentDistance, duration: appState.secondsElapsed, calories: appState.currentCalories };
+                workoutHistory.unshift(workout);
+            }
+            saveHistory();
+            appState.activeWorkoutId = null; 
+            openWorkoutDetail(workout.id);
+        }
+
+        function resumeWorkout(id) {
+            const workout = workoutHistory.find(w => w.id === id);
+            if(!workout) return;
+            appState.activeWorkoutId = id; appState.currentDistance = workout.distance; appState.secondsElapsed = workout.duration; appState.currentCalories = workout.calories;
+            document.getElementById('current-time').innerText = formatTime(appState.secondsElapsed);
+            document.getElementById('current-calories').innerText = Math.floor(appState.currentCalories);
+            document.getElementById('current-distance').innerText = appState.currentDistance.toFixed(2);
+            switchView('control');
+            togglePower(); 
+        }
+
+        function saveHistory() {
+            localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
+            renderHistory(); calculateLifetimeStats(); renderBadgesSummary();
+        }
+
+        // --- HISTORY & DETAIL SCREENS ---
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            if(workoutHistory.length === 0) {
+                container.innerHTML = `<div class="bg-white dark:bg-cuban-darkCard p-8 rounded-[2rem] text-center border-2 border-dashed border-cuban-sand dark:border-cuban-darkBorder"><p class="text-lg text-cuban-coffee/80 dark:text-cuban-darkMuted font-bold">No has caminao na' todavía, ¡ponte pa' eso!</p></div>`;
+                return;
+            }
+            workoutHistory.forEach(w => {
+                const dateObj = new Date(w.startTime);
+                const isToday = new Date().toDateString() === dateObj.toDateString();
+                const title = isToday ? "Hoy" : dateObj.toLocaleDateString(appState.lang === 'es' ? 'es-ES' : 'en-US', {month: 'short', day: 'numeric'});
+                const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const durMin = Math.floor(w.duration / 60);
+
+                container.innerHTML += `
+                    <div onclick="openWorkoutDetail(${w.id})" class="bg-white dark:bg-cuban-darkCard p-6 rounded-[2rem] shadow-sm border-b-4 border-cuban-sand/50 dark:border-cuban-darkBorder active:scale-[0.98] transition-transform cursor-pointer relative overflow-hidden shrink-0">
+                        <button onclick="event.stopPropagation(); promptDeleteList(${w.id})" class="absolute top-4 right-4 p-3 text-cuban-coffee/40 dark:text-cuban-darkMuted hover:text-red-500 z-10"><i class="ph-bold ph-trash text-2xl"></i></button>
+                        <div class="flex justify-between items-center mb-4 border-b border-cuban-stucco dark:border-cuban-darkBg pb-2 pr-10">
+                            <h3 class="font-black text-3xl">${title}</h3>
+                            <span class="text-base font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted">${timeStr}</span>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div><p class="font-black text-3xl text-cuban-coral">${durMin} <span class="text-base font-medium">min</span></p></div>
+                            <div class="text-right"><p class="font-black text-[2.5rem] text-cuban-teal dark:text-cuban-tealLight leading-none">${w.distance.toFixed(2)} <span class="text-xl font-serif italic text-cuban-coffee/80 dark:text-cuban-darkMuted">mi</span></p></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openWorkoutDetail(id) {
+            const workout = workoutHistory.find(w => w.id === id);
+            if(!workout) return;
+            appState.pendingDeleteId = id; 
+
+            const dateObj = new Date(w.startTime);
+            const isToday = new Date().toDateString() === dateObj.toDateString();
+            document.getElementById('detail-date').innerText = isToday ? "Hoy" : dateObj.toLocaleDateString(appState.lang === 'es' ? 'es-ES' : 'en-US', {weekday: 'long', month: 'long', day: 'numeric'});
+            document.getElementById('detail-time').innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            document.getElementById('detail-distance').innerText = workout.distance.toFixed(2);
+            document.getElementById('detail-duration').innerText = formatTime(workout.duration);
+            document.getElementById('detail-cals').innerText = Math.floor(workout.calories);
+
+            const circumference = 691; 
+            const percent = Math.min(workout.distance / 5.0, 1.0); 
+            setTimeout(() => { document.getElementById('detail-ring').style.strokeDashoffset = circumference - (percent * circumference); }, 100);
+
+            const hoursSinceEnd = (Date.now() - workout.endTime) / (1000 * 60 * 60);
+            const resumeContainer = document.getElementById('resume-container');
+            if (hoursSinceEnd <= 2 && isToday) {
+                resumeContainer.innerHTML = `
+                    <button onclick="resumeWorkout(${workout.id})" class="w-full py-6 rounded-[2.5rem] bg-cuban-coffee dark:bg-white text-white dark:text-cuban-coffee shadow-[0_8px_0_#2b1a17] dark:shadow-[0_8px_0_#cccccc] font-black text-2xl uppercase tracking-widest flex justify-center items-center gap-3 btn-press">
+                        <i class="ph-bold ph-arrow-u-up-left text-4xl"></i> ${i18n[appState.lang].btnResume}
+                    </button>
+                `;
+            } else { resumeContainer.innerHTML = ''; }
+            switchView('workout-detail');
+        }
+
+        function promptDeleteList(id) { appState.pendingDeleteId = id; openModal('delete-modal'); }
+        function promptDeleteDetail() { openModal('delete-modal'); }
+        function confirmDelete() {
+            workoutHistory = workoutHistory.filter(w => w.id !== appState.pendingDeleteId);
+            saveHistory(); closeModal('delete-modal'); appState.pendingDeleteId = null;
+            if(document.getElementById('view-workout-detail').classList.contains('active')) switchView('history');
+        }
+
+        // --- LIFETIME STATS ---
+        function calculateLifetimeStats() {
+            let tDist = 0, tTime = 0, tCals = 0;
+            workoutHistory.forEach(w => { tDist += w.distance; tTime += w.duration; tCals += w.calories; });
+            appState.totalLifetimeMiles = tDist;
+            
+            document.getElementById('stat-tot-miles').innerText = tDist.toFixed(1);
+            document.getElementById('stat-tot-time').innerHTML = `${Math.floor(tTime / 60)}`;
+            document.getElementById('stat-tot-workouts').innerText = workoutHistory.length;
+            document.getElementById('stat-tot-cal').innerText = Math.floor(tCals).toLocaleString();
+            renderBadgesSummary(); 
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
