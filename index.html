@@ -251,8 +251,8 @@
             <!-- DYNAMIC METRICS GRID (Responsive CSS Grid Fix) -->
             <div class="grid w-full gap-3 shrink-0" id="metrics-grid">
                 <div id="card-calories" class="flex-1 min-w-[30%] bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-fire text-orange-500 text-[32px] mb-1"></i>
-                    <span class="text-3xl font-black text-orange-500 tracking-tight leading-none" id="current-calories">0</span>
+                    <i class="ph-fill ph-fire text-amber-600/80 text-[32px] mb-1"></i>
+                    <span class="text-3xl font-black text-amber-600/80 tracking-tight leading-none" id="current-calories">0</span>
                     <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
                 </div>
                 <div id="card-time" class="flex-1 min-w-[30%] bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
@@ -329,7 +329,7 @@
             <div class="space-y-4 shrink-0">
                 <button onclick="openTrophyPack('streaks')" class="w-full bg-white dark:bg-cuban-darkCard p-6 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder flex items-center justify-between btn-press">
                     <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shadow-inner"><i class="ph-fill ph-fire text-4xl"></i></div>
+                        <div class="w-16 h-16 rounded-full bg-orange-100 text-amber-600/80 flex items-center justify-center shadow-inner"><i class="ph-fill ph-fire text-4xl"></i></div>
                         <div class="text-left">
                             <h3 class="text-2xl font-black text-cuban-coffee dark:text-white" data-i18n="packStreaks">Dando la Talla (Rachas)</h3>
                             <p class="text-base font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted" id="prog-streaks">0 / 6</p>
@@ -399,7 +399,7 @@
                     <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="timeLabel">Tiempo</p>
                 </div>
                 <div class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-6 shadow-sm border-2 border-cuban-sand/40 dark:border-cuban-darkBorder text-center">
-                    <i class="ph-fill ph-fire text-orange-500 text-4xl mb-3"></i>
+                    <i class="ph-fill ph-fire text-amber-600/80 text-4xl mb-3"></i>
                     <p class="text-4xl font-black" id="detail-cals">0</p>
                     <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="caloriesLabel">Calorías</p>
                 </div>
@@ -533,9 +533,9 @@
         // --- FULL EXPANDED TROPHY DATA ---
         const badgePacks = {
             streaks: [
-                { id: 's3', tKey: 's3T', dKey: 's3D', icon: 'ph-fire', color: 'text-orange-500 bg-orange-100', req: (s) => s.maxStreak >= 3 },
-                { id: 's7', tKey: 's7T', dKey: 's7D', icon: 'ph-fire', color: 'text-orange-500 bg-orange-100', req: (s) => s.maxStreak >= 7 },
-                { id: 's14', tKey: 's14T', dKey: 's14D', icon: 'ph-fire', color: 'text-orange-500 bg-orange-100', req: (s) => s.maxStreak >= 14 },
+                { id: 's3', tKey: 's3T', dKey: 's3D', icon: 'ph-fire', color: 'text-amber-600/80 bg-orange-100', req: (s) => s.maxStreak >= 3 },
+                { id: 's7', tKey: 's7T', dKey: 's7D', icon: 'ph-fire', color: 'text-amber-600/80 bg-orange-100', req: (s) => s.maxStreak >= 7 },
+                { id: 's14', tKey: 's14T', dKey: 's14D', icon: 'ph-fire', color: 'text-amber-600/80 bg-orange-100', req: (s) => s.maxStreak >= 14 },
                 { id: 's30', tKey: 's30T', dKey: 's30D', icon: 'ph-fire', color: 'text-red-500 bg-red-100', req: (s) => s.maxStreak >= 30 },
                 { id: 's50', tKey: 's50T', dKey: 's50D', icon: 'ph-fire', color: 'text-red-500 bg-red-100', req: (s) => s.maxStreak >= 50 },
                 { id: 's100', tKey: 's100T', dKey: 's100D', icon: 'ph-star', color: 'text-yellow-500 bg-yellow-100', req: (s) => s.maxStreak >= 100 }
@@ -553,7 +553,7 @@
                 { id: 'c2', tKey: 'c2T', dKey: 'c2D', icon: 'ph-music-notes', color: 'text-cuban-coral bg-pink-100', req: (s) => false },
                 { id: 'c3', tKey: 'c3T', dKey: 'c3D', icon: 'ph-wind', color: 'text-cyan-500 bg-cyan-100', req: (s) => false },
                 { id: 'c4', tKey: 'c4T', dKey: 'c4D', icon: 'ph-dice-six', color: 'text-gray-800 bg-gray-200', req: (s) => false },
-                { id: 'c5', tKey: 'c5T', dKey: 'c5D', icon: 'ph-t-shirt', color: 'text-orange-600 bg-orange-100', req: (s) => false },
+                { id: 'c5', tKey: 'c5T', dKey: 'c5D', icon: 'ph-t-shirt', color: 'text-amber-600/80 bg-orange-100', req: (s) => false },
                 { id: 'c6', tKey: 'c6T', dKey: 'c6D', icon: 'ph-microphone-stage', color: 'text-purple-600 bg-purple-100', req: (s) => false }
             ]
         };
