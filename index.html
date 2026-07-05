@@ -250,20 +250,20 @@
 
             <!-- DYNAMIC METRICS GRID (Responsive CSS Grid Fix) -->
             <div class="grid w-full gap-3 shrink-0" id="metrics-grid">
-                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[32px] mb-1"></i>
-                    <span class="text-3xl font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-distance">0.00</span>
-                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="distanceLabel">Millas</span>
+                <div id="card-calories" class="flex-1 min-w-[30%] bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-fire text-orange-500 text-[32px] mb-1"></i>
+                    <span class="text-3xl font-black text-orange-500 tracking-tight leading-none" id="current-calories">0</span>
+                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
                 </div>
-                <div id="card-time" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                <div id="card-time" class="flex-1 min-w-[30%] bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
                     <i class="ph-fill ph-timer text-cuban-coral text-[32px] mb-1"></i>
-                    <span class="text-3xl font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-time">00:00</span>
+                    <span class="text-3xl font-black text-cuban-coral tracking-tight leading-none" id="current-time">00:00</span>
                     <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="timeLabel">Tiempo</span>
                 </div>
-                <div id="card-calories" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-fire text-amber-500 text-[32px] mb-1"></i>
-                    <span class="text-3xl font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-calories">0</span>
-                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
+                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[32px] mb-1"></i>
+                    <span class="text-3xl font-black text-cuban-teal dark:text-cuban-tealLight tracking-tight leading-none" id="current-distance">0.00</span>
+                    <span class="text-[12px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="distanceLabel">Millas</span>
                 </div>
             </div>
 
@@ -395,12 +395,12 @@
             <div class="grid grid-cols-2 gap-4 mb-8 shrink-0">
                 <div class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-6 shadow-sm border-2 border-cuban-sand/40 dark:border-cuban-darkBorder text-center">
                     <i class="ph-fill ph-timer text-cuban-coral text-4xl mb-3"></i>
-                    <p class="text-4xl font-black text-cuban-coffee dark:text-white" id="detail-duration">00:00</p>
+                    <p class="text-4xl font-black" id="detail-duration">00:00</p>
                     <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="timeLabel">Tiempo</p>
                 </div>
                 <div class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-6 shadow-sm border-2 border-cuban-sand/40 dark:border-cuban-darkBorder text-center">
-                    <i class="ph-fill ph-fire text-amber-500 text-4xl mb-3"></i>
-                    <p class="text-4xl font-black text-cuban-coffee dark:text-white" id="detail-cals">0</p>
+                    <i class="ph-fill ph-fire text-orange-500 text-4xl mb-3"></i>
+                    <p class="text-4xl font-black" id="detail-cals">0</p>
                     <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="caloriesLabel">Calorías</p>
                 </div>
             </div>
@@ -771,12 +771,10 @@
             // Clean classes
             grid.className = 'grid w-full gap-3 shrink-0';
             cDist.classList.remove('col-span-2');
-            cTime.classList.remove('col-span-2');
-            cCal.classList.remove('col-span-2');
             
             if (visibleCount === 3) {
                 grid.classList.add('grid-cols-2');
-                cCal.classList.add('col-span-2'); // Calories full width on bottom
+                cDist.classList.add('col-span-2'); // Distance full width on bottom
             } else if (visibleCount === 2) {
                 grid.classList.add('grid-cols-2');
             } else if (visibleCount === 1) {
