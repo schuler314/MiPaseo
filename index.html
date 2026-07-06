@@ -222,13 +222,13 @@
         </div>
     </header>
 
-    <!-- 3. THE DYNAMIC MIDDLE AREA (Flex 1, Overflow Auto) -->
-    <main class="flex-1 overflow-y-auto no-scrollbar flex flex-col w-full max-w-lg mx-auto relative">
+    <!-- 3. THE DYNAMIC MIDDLE AREA (Flex 1, min-h-0 to allow native scrolling) -->
+    <main class="flex-1 overflow-y-auto no-scrollbar flex flex-col w-full max-w-lg mx-auto relative min-h-0">
         
         <!-- ==========================================
              VIEW 1: REMOTE CONTROL
         =========================================== -->
-        <div id="view-control" class="view-section active px-5 pt-4 pb-4 gap-4 w-full">
+        <div id="view-control" class="view-section active px-5 pt-5 pb-8 gap-5 w-full">
             
             <div class="flex justify-center items-center shrink-0">
                 <!-- Status Pill that acts as a Connection Indicator -->
@@ -249,36 +249,34 @@
                 </div>
             </div>
 
-            <!-- DYNAMIC METRICS GRID -->
-            <!-- Changed to a single row layout with smaller paddings and dynamic typography limits -->
-            <div class="grid w-full gap-2 shrink-0" id="metrics-grid">
+            <!-- DYNAMIC METRICS GRID (Responsive CSS Grid Fix) -->
+            <div class="grid w-full gap-3 shrink-0" id="metrics-grid">
                 
-                <div id="card-calories" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-3 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-fire text-orange-500 text-[26px] mb-1"></i>
-                    <span class="text-[clamp(1.4rem,4vw,1.8rem)] font-black text-orange-500 tracking-tight leading-none" id="current-calories">0</span>
+                <div id="card-calories" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-fire text-amber-500 text-[28px] mb-2"></i>
+                    <span class="text-[clamp(1.25rem,4vw,1.75rem)] font-black text-amber-500 tracking-tight leading-none" id="current-calories">0</span>
                     <span class="text-[10px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
                 </div>
 
-                <div id="card-time" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-3 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-timer text-cuban-coral text-[26px] mb-1"></i>
-                    <span class="text-[clamp(1.4rem,4vw,1.8rem)] font-black text-cuban-coral tracking-tight leading-none" id="current-time">00:00</span>
+                <div id="card-time" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-timer text-cuban-coral text-[28px] mb-2"></i>
+                    <span class="text-[clamp(1.25rem,4vw,1.75rem)] font-black text-cuban-coral tracking-tight leading-none" id="current-time">00:00</span>
                     <span class="text-[10px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="timeLabel">Tiempo</span>
                 </div>
 
-                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-3 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[26px] mb-1"></i>
-                    <span class="text-[clamp(1.4rem,4vw,1.8rem)] font-black text-cuban-teal dark:text-cuban-tealLight tracking-tight leading-none" id="current-distance">0.00</span>
+                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[28px] mb-2"></i>
+                    <span class="text-[clamp(1.25rem,4vw,1.75rem)] font-black text-cuban-teal dark:text-cuban-tealLight tracking-tight leading-none" id="current-distance">0.00</span>
                     <span class="text-[10px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="distanceLabel">Millas</span>
                 </div>
 
             </div>
 
             <!-- SPEED & RIGHT-HANDED ROCKER -->
-            <div class="flex w-full gap-3 items-stretch my-1 min-h-[140px] shrink-0">
+            <div class="flex w-full gap-4 items-stretch my-1 min-h-[140px] shrink-0">
                 <div class="flex-1 bg-white dark:bg-cuban-darkCard rounded-[2.5rem] p-4 shadow-md border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col justify-center items-center relative overflow-hidden min-w-0">
                     <span class="text-[clamp(0.8rem,3vw,1.125rem)] font-black text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-widest mb-1 z-10" data-i18n="speedLabel">Velocidad</span>
                     <div class="flex items-baseline gap-1 z-10">
-                        <!-- Dynamic text sizing ensures the huge number always fits -->
                         <span class="text-[clamp(4.5rem,15vw,6.5rem)] font-black tracking-tighter leading-none text-cuban-teal dark:text-cuban-tealLight" id="current-speed">0.0</span>
                         <span class="text-[clamp(1.25rem,4vw,1.5rem)] font-serif text-cuban-coffee/80 dark:text-cuban-darkMuted italic">mph</span>
                     </div>
@@ -295,7 +293,7 @@
                 </div>
             </div>
 
-            <!-- Master Start/Stop (Anchored via mt-auto) -->
+            <!-- Master Start/Stop (Anchored safely inside scroll area) -->
             <div class="mt-auto shrink-0 w-full pt-4">
                 <button id="master-btn" onclick="togglePower()" class="w-full py-6 rounded-[2.5rem] bg-cuban-teal dark:bg-cuban-tealLight text-white shadow-[0_10px_0_#0F5453] dark:shadow-[0_10px_0_#1f665e] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors">
                     <span data-i18n="btnStart">¡DALE!</span> <i class="ph-fill ph-play-circle text-5xl"></i>
@@ -306,7 +304,7 @@
         <!-- ==========================================
              VIEW 2: HISTORY LIST
         =========================================== -->
-        <div id="view-history" class="view-section px-6 pt-4 pb-6 gap-6 w-full">
+        <div id="view-history" class="view-section px-6 pt-4 pb-12 gap-6 w-full">
             <h2 class="text-4xl font-serif text-cuban-teal dark:text-cuban-tealLight border-b-2 border-cuban-sand/50 dark:border-cuban-darkBorder pb-4 shrink-0" data-i18n="historyTitle">Tus Pasos</h2>
             <div class="space-y-4" id="history-container">
                 <!-- JS Populated -->
@@ -316,7 +314,7 @@
         <!-- ==========================================
              VIEW 3: ACHIEVEMENTS & STATS 
         =========================================== -->
-        <div id="view-achievements" class="view-section px-6 pt-4 pb-6 w-full">
+        <div id="view-achievements" class="view-section px-6 pt-4 pb-12 w-full">
             
             <!-- Condensed, High-Density Stats Header -->
             <div class="bg-cuban-coffee dark:bg-black text-white rounded-3xl p-5 mb-6 shadow-xl relative overflow-hidden shrink-0 flex flex-col gap-4">
@@ -343,7 +341,7 @@
                     <div class="w-px h-8 bg-white/20"></div>
                     <div class="flex flex-col">
                         <span class="text-cuban-sand/80 text-[10px] font-bold uppercase tracking-wider" data-i18n="totalCalories">Cals</span>
-                        <span class="text-[clamp(1.5rem,5vw,2rem)] font-black leading-none text-orange-400" id="stat-tot-cal">0</span>
+                        <span class="text-[clamp(1.5rem,5vw,2rem)] font-black leading-none text-amber-500" id="stat-tot-cal">0</span>
                     </div>
                 </div>
             </div>
@@ -354,7 +352,7 @@
             <div class="space-y-4 shrink-0 pb-4">
                 <button onclick="openTrophyPack('streaks')" class="w-full bg-white dark:bg-cuban-darkCard p-5 rounded-3xl shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder flex items-center justify-between btn-press">
                     <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-full bg-orange-100 text-amber-600/80 flex items-center justify-center shadow-inner"><i class="ph-fill ph-fire text-3xl"></i></div>
+                        <div class="w-14 h-14 rounded-full bg-orange-100 text-amber-500 flex items-center justify-center shadow-inner"><i class="ph-fill ph-fire text-3xl"></i></div>
                         <div class="text-left">
                             <h3 class="text-xl font-black text-cuban-coffee dark:text-white" data-i18n="packStreaks">Dando la Talla (Rachas)</h3>
                             <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted" id="prog-streaks">0 / 6</p>
@@ -390,7 +388,7 @@
         <!-- ==========================================
              VIEW 4: INDIVIDUAL WORKOUT DETAIL
         =========================================== -->
-        <div id="view-workout-detail" class="view-section px-6 pt-6 pb-6 w-full z-20 bg-cuban-stucco dark:bg-cuban-darkBg absolute inset-0 overflow-y-auto no-scrollbar">
+        <div id="view-workout-detail" class="view-section px-6 pt-6 pb-12 w-full z-20 bg-cuban-stucco dark:bg-cuban-darkBg absolute inset-0">
             <div class="flex justify-between items-center pb-4 border-b border-cuban-sand/50 dark:border-cuban-darkBorder shrink-0">
                 <button onclick="switchView('history')" class="p-3 bg-white dark:bg-cuban-darkCard rounded-full shadow-sm border-2 border-cuban-sand dark:border-transparent btn-press">
                     <i class="ph-bold ph-caret-left text-3xl"></i>
@@ -424,8 +422,8 @@
                     <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="timeLabel">Tiempo</p>
                 </div>
                 <div class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-6 shadow-sm border-2 border-cuban-sand/40 dark:border-cuban-darkBorder text-center">
-                    <i class="ph-fill ph-fire text-amber-600/80 text-4xl mb-3"></i>
-                    <p class="text-3xl font-black text-cuban-coffee dark:text-white" id="detail-cals">0</p>
+                    <i class="ph-fill ph-fire text-amber-500 text-4xl mb-3"></i>
+                    <p class="text-3xl font-black text-amber-500" id="detail-cals">0</p>
                     <p class="text-sm font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase tracking-wider mt-1" data-i18n="caloriesLabel">Calorías</p>
                 </div>
             </div>
@@ -465,7 +463,7 @@
         const i18n = {
             es: {
                 navRemote: "Control", navHistory: "Historial", navTrophies: "Logros",
-                statusConnecting: "Buscando caminadora...", statusConnected: "¡Conectao y listo!", statusDisconnected: "Sin conexión",
+                statusConnecting: "Buscando caminadora...", statusConnected: "¡Conectado y listo!", statusDisconnected: "Sin conexión",
                 statusReady: "¡Echando pa' lante!", statusWalking: "¡Echando humo! 🔥", statusSaved: "¡Tremendo Despelote! (Guardao)",
                 speedLabel: "Velocidad", timeLabel: "Tiempo", distanceLabel: "Millas", caloriesLabel: "Calorías",
                 btnStart: "¡DALE!", btnStop: "PARA AHÍ", historyTitle: "Tus Pasos", statsTitle: "Tu Trayectoria",
@@ -553,9 +551,9 @@
         // --- FULL EXPANDED TROPHY DATA ---
         const badgePacks = {
             streaks: [
-                { id: 's3', tKey: 's3T', dKey: 's3D', icon: 'ph-fire', color: 'text-amber-600/80 bg-orange-100', req: (s) => s.maxStreak >= 3 },
-                { id: 's7', tKey: 's7T', dKey: 's7D', icon: 'ph-fire', color: 'text-amber-600/80 bg-orange-100', req: (s) => s.maxStreak >= 7 },
-                { id: 's14', tKey: 's14T', dKey: 's14D', icon: 'ph-fire', color: 'text-amber-600/80 bg-orange-100', req: (s) => s.maxStreak >= 14 },
+                { id: 's3', tKey: 's3T', dKey: 's3D', icon: 'ph-fire', color: 'text-amber-500 bg-orange-100', req: (s) => s.maxStreak >= 3 },
+                { id: 's7', tKey: 's7T', dKey: 's7D', icon: 'ph-fire', color: 'text-amber-500 bg-orange-100', req: (s) => s.maxStreak >= 7 },
+                { id: 's14', tKey: 's14T', dKey: 's14D', icon: 'ph-fire', color: 'text-amber-500 bg-orange-100', req: (s) => s.maxStreak >= 14 },
                 { id: 's30', tKey: 's30T', dKey: 's30D', icon: 'ph-fire', color: 'text-red-500 bg-red-100', req: (s) => s.maxStreak >= 30 },
                 { id: 's50', tKey: 's50T', dKey: 's50D', icon: 'ph-fire', color: 'text-red-500 bg-red-100', req: (s) => s.maxStreak >= 50 },
                 { id: 's100', tKey: 's100T', dKey: 's100D', icon: 'ph-star', color: 'text-yellow-500 bg-yellow-100', req: (s) => s.maxStreak >= 100 }
@@ -573,7 +571,7 @@
                 { id: 'c2', tKey: 'c2T', dKey: 'c2D', icon: 'ph-music-notes', color: 'text-cuban-coral bg-pink-100', req: (s) => false },
                 { id: 'c3', tKey: 'c3T', dKey: 'c3D', icon: 'ph-wind', color: 'text-cyan-500 bg-cyan-100', req: (s) => false },
                 { id: 'c4', tKey: 'c4T', dKey: 'c4D', icon: 'ph-dice-six', color: 'text-gray-800 bg-gray-200', req: (s) => false },
-                { id: 'c5', tKey: 'c5T', dKey: 'c5D', icon: 'ph-t-shirt', color: 'text-amber-600/80 bg-orange-100', req: (s) => false },
+                { id: 'c5', tKey: 'c5T', dKey: 'c5D', icon: 'ph-t-shirt', color: 'text-amber-500 bg-orange-100', req: (s) => false },
                 { id: 'c6', tKey: 'c6T', dKey: 'c6D', icon: 'ph-microphone-stage', color: 'text-purple-600 bg-purple-100', req: (s) => false }
             ]
         };
@@ -833,7 +831,7 @@
             
             const visibleCount = [appState.showTime, appState.showDistance, appState.showCalories].filter(Boolean).length;
             
-            grid.className = 'grid w-full gap-2 shrink-0';
+            grid.className = 'grid w-full gap-3 shrink-0';
             
             if (visibleCount === 3) {
                 grid.classList.add('grid-cols-3');
@@ -940,6 +938,7 @@
                 appState.timerInterval = setInterval(tickTimer, 1000);
                 
                 const btn = document.getElementById('master-btn');
+                const status = document.getElementById('status-text');
                 btn.className = "w-full py-6 rounded-[2.5rem] bg-cuban-coral text-white shadow-[0_10px_0_#b84155] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors";
                 btn.innerHTML = `<span data-i18n="btnStop">${t.btnStop}</span> <i class="ph-fill ph-stop-circle text-5xl"></i>`;
                 
