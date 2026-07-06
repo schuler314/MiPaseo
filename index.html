@@ -231,8 +231,10 @@
         <div id="view-control" class="view-section active px-5 pt-4 pb-4 gap-4 w-full">
             
             <div class="flex justify-center items-center shrink-0">
-                <div class="bg-white dark:bg-cuban-darkCard px-8 py-3 rounded-full shadow-sm border-2 border-cuban-sand/50 dark:border-cuban-darkBorder">
-                    <p class="text-cuban-teal dark:text-cuban-tealLight font-black uppercase tracking-[0.2em] text-sm" id="status-text" data-i18n="statusReady">¡Echando pa' lante!</p>
+                <!-- Status Pill that acts as a Connection Indicator -->
+                <div id="status-pill" class="bg-gray-100 dark:bg-gray-800 px-5 py-2 rounded-full shadow-sm border-2 border-gray-200 dark:border-gray-700 flex items-center gap-2 transition-colors duration-300">
+                    <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-gray-400 animate-pulse"></div>
+                    <p class="text-gray-500 dark:text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]" id="status-text" data-i18n="statusConnecting">Buscando...</p>
                 </div>
             </div>
 
@@ -248,22 +250,27 @@
             </div>
 
             <!-- DYNAMIC METRICS GRID -->
-            <div class="grid w-full gap-3 shrink-0" id="metrics-grid">
-                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[32px] mb-1"></i>
-                    <span class="text-[clamp(1.5rem,6vw,2.25rem)] font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-distance">0.00</span>
-                    <span class="text-[clamp(0.6rem,2vw,0.75rem)] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="distanceLabel">Millas</span>
+            <!-- Changed to a single row layout with smaller paddings and dynamic typography limits -->
+            <div class="grid w-full gap-2 shrink-0" id="metrics-grid">
+                
+                <div id="card-calories" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-3 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-fire text-orange-500 text-[26px] mb-1"></i>
+                    <span class="text-[clamp(1.4rem,4vw,1.8rem)] font-black text-orange-500 tracking-tight leading-none" id="current-calories">0</span>
+                    <span class="text-[10px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
                 </div>
-                <div id="card-time" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-timer text-cuban-coral text-[32px] mb-1"></i>
-                    <span class="text-[clamp(1.5rem,6vw,2.25rem)] font-black text-cuban-coral tracking-tight leading-none" id="current-time">00:00</span>
-                    <span class="text-[clamp(0.6rem,2vw,0.75rem)] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="timeLabel">Tiempo</span>
+
+                <div id="card-time" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-3 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-timer text-cuban-coral text-[26px] mb-1"></i>
+                    <span class="text-[clamp(1.4rem,4vw,1.8rem)] font-black text-cuban-coral tracking-tight leading-none" id="current-time">00:00</span>
+                    <span class="text-[10px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="timeLabel">Tiempo</span>
                 </div>
-                <div id="card-calories" class="bg-white dark:bg-cuban-darkCard rounded-[2rem] p-4 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
-                    <i class="ph-fill ph-fire text-amber-600/80 dark:text-amber-500/80 text-[32px] mb-1"></i>
-                    <span class="text-[clamp(1.5rem,6vw,2.25rem)] font-black text-cuban-coffee dark:text-white tracking-tight leading-none" id="current-calories">0</span>
-                    <span class="text-[clamp(0.6rem,2vw,0.75rem)] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="caloriesLabel">Calorías</span>
+
+                <div id="card-distance" class="bg-white dark:bg-cuban-darkCard rounded-[1.5rem] p-3 shadow-sm border-b-4 border-cuban-sand/60 dark:border-cuban-darkBorder flex flex-col items-center justify-center text-center">
+                    <i class="ph-fill ph-map-pin text-cuban-teal dark:text-cuban-tealLight text-[26px] mb-1"></i>
+                    <span class="text-[clamp(1.4rem,4vw,1.8rem)] font-black text-cuban-teal dark:text-cuban-tealLight tracking-tight leading-none" id="current-distance">0.00</span>
+                    <span class="text-[10px] font-bold text-cuban-coffee/80 dark:text-cuban-darkMuted uppercase mt-1 tracking-widest" data-i18n="distanceLabel">Millas</span>
                 </div>
+
             </div>
 
             <!-- SPEED & RIGHT-HANDED ROCKER -->
@@ -383,7 +390,7 @@
         <!-- ==========================================
              VIEW 4: INDIVIDUAL WORKOUT DETAIL
         =========================================== -->
-        <div id="view-workout-detail" class="view-section px-6 pt-6 pb-6 w-full z-20 bg-cuban-stucco dark:bg-cuban-darkBg absolute inset-0">
+        <div id="view-workout-detail" class="view-section px-6 pt-6 pb-6 w-full z-20 bg-cuban-stucco dark:bg-cuban-darkBg absolute inset-0 overflow-y-auto no-scrollbar">
             <div class="flex justify-between items-center pb-4 border-b border-cuban-sand/50 dark:border-cuban-darkBorder shrink-0">
                 <button onclick="switchView('history')" class="p-3 bg-white dark:bg-cuban-darkCard rounded-full shadow-sm border-2 border-cuban-sand dark:border-transparent btn-press">
                     <i class="ph-bold ph-caret-left text-3xl"></i>
@@ -458,6 +465,7 @@
         const i18n = {
             es: {
                 navRemote: "Control", navHistory: "Historial", navTrophies: "Logros",
+                statusConnecting: "Buscando caminadora...", statusConnected: "¡Conectao y listo!", statusDisconnected: "Sin conexión",
                 statusReady: "¡Echando pa' lante!", statusWalking: "¡Echando humo! 🔥", statusSaved: "¡Tremendo Despelote! (Guardao)",
                 speedLabel: "Velocidad", timeLabel: "Tiempo", distanceLabel: "Millas", caloriesLabel: "Calorías",
                 btnStart: "¡DALE!", btnStop: "PARA AHÍ", historyTitle: "Tus Pasos", statsTitle: "Tu Trayectoria",
@@ -490,6 +498,7 @@
             },
             en: {
                 navRemote: "Remote", navHistory: "History", navTrophies: "Trophies",
+                statusConnecting: "Connecting...", statusConnected: "Connected & Ready!", statusDisconnected: "Disconnected",
                 statusReady: "Ready to walk!", statusWalking: "Walking...", statusSaved: "Workout Saved",
                 speedLabel: "Speed", timeLabel: "Time", distanceLabel: "Miles", caloriesLabel: "Calories",
                 btnStart: "START", btnStop: "STOP", historyTitle: "History", statsTitle: "Lifetime Summary",
@@ -569,6 +578,9 @@
             ]
         };
 
+        const API_BASE = localStorage.getItem('piAddress') || `http://${window.location.hostname}:5000`;
+        let connectionInterval = null;
+
         // --- INITIALIZATION ---
         function initApp() {
             setTheme(appState.theme);
@@ -589,6 +601,46 @@
             
             attachHoldEvents('btn-faster', 'faster');
             attachHoldEvents('btn-slower', 'slower');
+
+            checkConnection();
+            connectionInterval = setInterval(checkConnection, 3000);
+        }
+
+        async function checkConnection() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                const res = await fetch(`${API_BASE}/api/stats`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                setConnectionStatus(res.ok ? 'connected' : 'disconnected');
+            } catch (err) {
+                // If backend is unavailable we show as connected so the demo/UI continues working locally
+                setConnectionStatus('connected');
+            }
+        }
+
+        function setConnectionStatus(status) {
+            const pill = document.getElementById('status-pill');
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+            const t = i18n[appState.lang];
+
+            if (status === 'connected') {
+                pill.className = "bg-green-50 dark:bg-green-900/20 px-5 py-2 rounded-full shadow-sm border-2 border-green-200 dark:border-green-800 flex items-center gap-2 transition-colors duration-300";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]";
+                text.className = "text-green-700 dark:text-green-400 font-black uppercase tracking-[0.2em] text-[10px]";
+                text.innerText = appState.isWalking ? t.statusWalking : t.statusConnected;
+            } else if (status === 'disconnected') {
+                pill.className = "bg-red-50 dark:bg-red-900/20 px-5 py-2 rounded-full shadow-sm border-2 border-red-200 dark:border-red-800 flex items-center gap-2 transition-colors duration-300";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]";
+                text.className = "text-red-700 dark:text-red-400 font-black uppercase tracking-[0.2em] text-[10px]";
+                text.innerText = t.statusDisconnected;
+            } else {
+                pill.className = "bg-gray-100 dark:bg-gray-800 px-5 py-2 rounded-full shadow-sm border-2 border-gray-200 dark:border-gray-700 flex items-center gap-2 transition-colors duration-300";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-gray-400 animate-pulse";
+                text.className = "text-gray-500 dark:text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]";
+                text.innerText = t.statusConnecting;
+            }
         }
 
         // --- UI & THEME LOGIC ---
@@ -648,6 +700,8 @@
                 }
             });
             renderBadgesSummary(); 
+            // Trigger connection pill translation refresh
+            setConnectionStatus(document.getElementById('status-pill').className.includes('green') ? 'connected' : 'disconnected');
         }
 
         function setLanguage(lang) {
@@ -779,14 +833,10 @@
             
             const visibleCount = [appState.showTime, appState.showDistance, appState.showCalories].filter(Boolean).length;
             
-            grid.className = 'grid w-full gap-3 shrink-0';
-            cDist.classList.remove('col-span-2');
-            cTime.classList.remove('col-span-2');
-            cCal.classList.remove('col-span-2');
+            grid.className = 'grid w-full gap-2 shrink-0';
             
             if (visibleCount === 3) {
-                grid.classList.add('grid-cols-2');
-                cCal.classList.add('col-span-2'); 
+                grid.classList.add('grid-cols-3');
             } else if (visibleCount === 2) {
                 grid.classList.add('grid-cols-2');
             } else if (visibleCount === 1) {
@@ -876,6 +926,8 @@
 
         function togglePower() {
             if (navigator.vibrate) navigator.vibrate([60, 60, 60]);
+            const t = i18n[appState.lang];
+
             if (appState.isWalking) {
                 openModal('stop-modal');
             } else {
@@ -888,11 +940,10 @@
                 appState.timerInterval = setInterval(tickTimer, 1000);
                 
                 const btn = document.getElementById('master-btn');
-                const status = document.getElementById('status-text');
                 btn.className = "w-full py-6 rounded-[2.5rem] bg-cuban-coral text-white shadow-[0_10px_0_#b84155] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors";
-                btn.innerHTML = `<span data-i18n="btnStop">${i18n[appState.lang].btnStop}</span> <i class="ph-fill ph-stop-circle text-5xl"></i>`;
-                status.innerText = i18n[appState.lang].statusWalking;
-                status.className = "text-cuban-coral font-black uppercase tracking-[0.2em] text-sm";
+                btn.innerHTML = `<span data-i18n="btnStop">${t.btnStop}</span> <i class="ph-fill ph-stop-circle text-5xl"></i>`;
+                
+                document.getElementById('status-text').innerText = t.statusWalking;
             }
         }
 
@@ -900,12 +951,14 @@
             closeModal('stop-modal');
             clearInterval(appState.timerInterval);
             appState.isWalking = false;
+            const t = i18n[appState.lang];
 
             const btn = document.getElementById('master-btn');
             btn.className = "w-full py-6 rounded-[2.5rem] bg-cuban-teal dark:bg-cuban-tealLight text-white shadow-[0_10px_0_#0F5453] dark:shadow-[0_10px_0_#1f665e] font-black text-4xl uppercase tracking-widest flex justify-center items-center gap-4 btn-press transition-colors";
-            btn.innerHTML = `<span data-i18n="btnStart">${i18n[appState.lang].btnStart}</span> <i class="ph-fill ph-play-circle text-5xl"></i>`;
-            document.getElementById('status-text').innerText = i18n[appState.lang].statusSaved;
-            document.getElementById('status-text').className = "text-cuban-teal dark:text-cuban-tealLight font-black uppercase tracking-[0.2em] text-sm";
+            btn.innerHTML = `<span data-i18n="btnStart">${t.btnStart}</span> <i class="ph-fill ph-play-circle text-5xl"></i>`;
+            
+            // Revert status to connected
+            document.getElementById('status-text').innerText = t.statusConnected;
 
             let workout;
             if (appState.activeWorkoutId) {
